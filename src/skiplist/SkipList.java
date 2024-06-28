@@ -1,5 +1,8 @@
 package skiplist;
+
 import java.util.Random;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.implementations.MultiGraph;
 
 public class SkipList<T extends Comparable<T>> implements List<T> {
     private static final int MAX_NIVEL = 16;
@@ -20,6 +23,7 @@ public class SkipList<T extends Comparable<T>> implements List<T> {
 
         @Override
         public String toString(){
+            if(valor == null) return "Head";
             return valor.toString();
         }
     }
@@ -56,7 +60,7 @@ public class SkipList<T extends Comparable<T>> implements List<T> {
 
         actual = actual.adelante[0];
 
-        if (actual == null || !actual.valor.equals(valor)) {
+        if (actual == null || actual.valor.compareTo(valor) != 0) {
             int nuevoNivel = randomLevel();
             if (nuevoNivel > nivelActual) {
                 for (int i = nivelActual + 1; i <= nuevoNivel; i++) {
@@ -124,7 +128,7 @@ public class SkipList<T extends Comparable<T>> implements List<T> {
 
         actual = actual.adelante[0];
 
-        if (actual != null && actual.valor.equals(valor)) {
+        if (actual != null && actual.valor.compareTo(valor) == 0) {
             for (int i = 0; i <= nivelActual; i++) {
                 if (actualizar[i].adelante[i] != actual) break;
                 actualizar[i].adelante[i] = actual.adelante[i];
@@ -154,6 +158,44 @@ public class SkipList<T extends Comparable<T>> implements List<T> {
             actual = actual.adelante[0];
         }
         return res + "]";
+    }
+
+    public void display(){
+        if(isEmpty()) return;
+        System.setProperty("org.graphstream.ui", "swing");
+        Graph graph = new MultiGraph("SkipList");
+
+        String css = "node { fill-color: black; size: 30px; text-size: 20px; text-color: white; } edge { fill-color: black; size: 2px; arrow-size: 10px, 10px; arrow-shape: arrow; }";
+        graph.setAttribute("ui.stylesheet", css);
+    
+        createList(graph, 50, 5, 40);
+        graph.display(false);
+    }
+    
+    private void createList(Graph graph, int x, int y, int xOffset){
+        Nodo<T> actual = cabeza;
+        while(actual != null){
+            graph.addNode(actual.toString()).setAttribute("xyz", x, y, 0);
+            graph.getNode(actual.toString()).setAttribute("ui.label", actual.toString());
+            x += xOffset;
+            actual = actual.adelante[0];
+        }
+
+        for (int level = 0; level <= nivelActual; level++) {
+            actual = cabeza.adelante[level];
+            Nodo<T> prev = cabeza;
+    
+            while (actual != null) {
+                String name = prev.toString() + " to " + actual.toString() + " lev" + level;
+                if (graph.getEdge(name) == null) {
+                    graph.addEdge(name, prev.toString(), actual.toString()).setAttribute("ui.label", "Level " + level);
+                }
+                
+                prev = actual;
+                actual = actual.adelante[level];
+            }
+        }
+        
     }
 
 }

@@ -15,6 +15,7 @@ public class Test{
 
         System.out.println(skipList);
         System.out.println(skipList.size());
+        skipList.display();
 
         System.out.println("Buscar 19: " + skipList.search("19")); 
         System.out.println("Buscar 15: " + skipList.search("15"));
@@ -27,3 +28,4 @@ public class Test{
     }
 }
 
+                                                    
