@@ -1,5 +1,8 @@
 package splaytree;
 
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.implementations.SingleGraph;
+
 public class SplayTree<E extends Comparable<E>> implements Tree<E> {
 
   private Node<E> root;
@@ -154,5 +157,33 @@ public class SplayTree<E extends Comparable<E>> implements Tree<E> {
   private String toString(Node<E> actual){
     if(actual == null) return "";
     return toString(actual.left) + " " + actual.toString() + " " + toString(actual.right);
-   }
+  }
+
+  public void display(){
+    if(isEmpty()) return;
+    System.setProperty("org.graphstream.ui", "swing");
+    Graph graph = new SingleGraph("Arbol AVL");
+    String css = "node { fill-color: black; size: 30px; text-size: 20px; text-color: white; } edge { fill-color: black; size: 2px; arrow-size: 10px, 10px; arrow-shape: arrow; }";
+    graph.setAttribute("ui.stylesheet", css);
+
+    graph.addNode(root.toString());
+    createTree(graph, root, 50, 5, 40);
+    graph.display(false);
+  }
+
+  private void createTree(Graph graph, Node<E> actual, int x, int y, int xOffset){
+    if(actual == null) return;
+    graph.getNode(actual.toString()).setAttribute("ui.label", actual.data.toString());
+    graph.getNode(actual.toString()).setAttribute("xyz", x, y, 0);
+    if(actual.left != null){
+      graph.addNode(actual.left.toString());
+      graph.addEdge(actual.toString() + actual.left.toString(), actual.toString(), actual.left.toString());
+      createTree(graph, actual.left, x - xOffset, y - 10, xOffset / 2);
+    }
+    if(actual.right != null){
+      graph.addNode(actual.right.toString());
+      graph.addEdge(actual.toString() + actual.right.toString(), actual.toString(), actual.right.toString());
+      createTree(graph, actual.right, x + xOffset, y - 10, xOffset / 2);
+    }
+  }
 }
