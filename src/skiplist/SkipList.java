@@ -153,11 +153,15 @@ public class SkipList<T extends Comparable<T>> implements List<T> {
     public String toString() {
         String res = "[";
         Nodo<T> actual = cabeza.adelante[0];
-        while(actual.adelante[0] != null){
-            res += actual.toString() + ", ";
+        while (actual != null) {
+            res += actual.toString();
             actual = actual.adelante[0];
+            if (actual != null) {
+                res += ", ";
+            }
         }
-        return res + "]";
+        res += "]";
+        return res;
     }
 
     public void display(){
